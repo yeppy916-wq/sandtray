@@ -1,0 +1,14 @@
+.marker-buttons{grid-template-columns:1fr!important;gap:6px;max-width:none!important}
+.marker-buttons .button{justify-content:flex-start;padding:8px 10px;gap:9px}
+.marker-symbol.waypoint{background:#8d91c6}
+.route-summary{font-size:10px;line-height:1.9;color:#7c8ba3;margin:9px 0 4px}
+.route-explainer{font-size:10px;color:#8897ac;line-height:1.8;margin:6px 0 12px}
+.route-explainer summary{cursor:pointer;color:#6c83a6}
+.route-explainer p{padding:7px 0 0}
+.land-materials{margin:12px 0 6px;font-size:10px;color:#8391a7}
+.land-materials>div{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}
+.material-button{border:1px solid #dee6f2;background:#fff;color:#7b8ba2;border-radius:6px;padding:6px;font-size:10px;display:flex;align-items:center;gap:6px}
+.material-button.active{background:#eaf1ff;border-color:#9eb8e3;color:#587db4}
+.material-dot{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid #0000000d}
+.material-dot.grass{background:#94b77b}.material-dot.sand{background:#dfc794}.material-dot.soil{background:#ad896c}.material-dot.stone{background:#a9b3b5}
+@media(max-width:760px){.marker-buttons{grid-template-columns:repeat(3,minmax(0,1fr))!important}.marker-buttons .button{justify-content:center;font-size:10px;padding:7px 3px;gap:4px}.land-materials>div{grid-template-columns:repeat(4,1fr)}.route-explainer{margin-bottom:6px}}
