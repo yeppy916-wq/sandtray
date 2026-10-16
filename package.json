@@ -1,6 +1,6 @@
 {
   "name": "sandtray",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "description": "一隅：保留不规则地图的离线沙盘与三点路线原型",
   "scripts": {

@@ -1,6 +1,7 @@
 from pathlib import Path
 from story_feature import augment_story
 from route_feature import augment_route
+from ui_feature import augment_ui
 
 root=Path(__file__).resolve().parent
 source=(root/'base-template.html').read_text(encoding='utf8')
@@ -57,6 +58,7 @@ source=source.replace('远景查看完整岛屿，近景观察旅人和物件。
 source=source.replace("if(restored)message('上次的沙盘已恢复。可以继续摆置；想体验首次示例，可点右上角“示例沙盘”。');", "if(restored)message('上次的沙盘已恢复。滚轮缩放、右键平移；想看新版场景，可点“示例沙盘”。');")
 source=augment_story(source)
 source=augment_route(source)
+source=augment_ui(source)
 source='\n'.join(line.rstrip() for line in source.splitlines())+'\n'
 out=root.parent/'index.html'
 out.write_text(source,encoding='utf8',newline='\n')
