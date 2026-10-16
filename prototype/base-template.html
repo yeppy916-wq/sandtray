@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f3ed"><title>一隅 · 沙盘游戏原型</title>
+<style>
+:root{--paper:#f5f3ed;--card:#fffefa;--ink:#303a31;--muted:#81877b;--line:#e8e8de;--green:#52674d;--soft:#edf0e7;--gold:#b18b4d;--sans:"Microsoft YaHei","PingFang SC",system-ui,sans-serif}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.65 var(--sans)}button,input{font:inherit}button{cursor:pointer;color:inherit}button:disabled{cursor:default;opacity:.4}button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #a4b39b;outline-offset:3px}button{touch-action:manipulation}h1,h2,h3,p{margin:0}button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}button.active{color:#40563c}.app{max-width:1480px;margin:auto;padding:24px 32px 22px}.header{display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:33px;height:33px;background:#e6e9dd;border-radius:11px;display:grid;place-items:center}.brand-mark svg{width:24px;height:24px}.brand strong{font-size:22px;letter-spacing:4px}.version{margin-left:12px;padding-left:15px;border-left:1px solid #d6dacd;font-size:11px;letter-spacing:1px;color:var(--muted)}.header-actions{display:flex;align-items:center;gap:9px}.button{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:8px 13px;display:inline-flex;gap:7px;align-items:center;justify-content:center;font-size:12px;white-space:nowrap;transition:background .15s}.button:hover:not(:disabled){background:#eceee4}.button.subtle{background:transparent;border-color:transparent;color:var(--muted)}.button.primary{background:var(--green);border-color:var(--green);color:white}.button.primary:hover:not(:disabled){background:#40563c}.intro{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin:30px 0 22px}.intro h1{font:500 29px/1.4 "Noto Serif SC",SimSun,serif;letter-spacing:1px}.intro p{font-size:12px;color:var(--muted);margin-top:8px}.local-badge{font-size:11px;display:flex;align-items:center;gap:7px;white-space:nowrap;color:var(--muted)}.dot{width:6px;height:6px;border-radius:50%;background:#8fa280;display:inline-block}.workspace{display:grid;grid-template-columns:224px minmax(0,1fr);gap:18px;align-items:start}.tools{padding:19px 16px;background:var(--card);border:1px solid var(--line);border-radius:15px}.section-label{font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:12px}.palette{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tool{display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;min-height:68px;border:1px solid #e9ebe1;background:#fffefa;border-radius:10px;font-size:12px;position:relative}.tool svg{width:23px;height:23px}.tool:hover:not(:disabled){background:#f4f4ec}.tool.active{background:#eaf0e3;border-color:#97aa8c;box-shadow:0 0 0 1px #97aa8c33}.tool small{position:absolute;right:7px;top:3px;font-size:9px;color:#a8ad9f}.terrain-swatches{display:flex;gap:8px;padding:13px 0;border-bottom:1px solid var(--line);margin-bottom:14px}.tool-note{font-size:11px;color:var(--muted);line-height:1.8;margin-top:12px;min-height:40px}.tool-options{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px}.tool-options .button{padding:4px 8px;font-size:11px}.marker-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}.marker-buttons .button{padding:9px 4px}.marker-buttons .active{border-color:#97aa8c;background:#eaf0e3}.marker-symbol{width:15px;height:15px;display:inline-grid;place-items:center;font-size:10px;border-radius:50%;background:#5a7053;color:#fff}.marker-symbol.goal{background:#ad8751}.divider{height:1px;background:var(--line);margin:18px 0}.selection{font-size:11px;color:var(--muted);min-height:44px}.selection strong{color:var(--ink);font-weight:500}.small-actions{display:flex;gap:7px;margin-top:10px}.small-actions .button{font-size:11px;padding:5px 9px}.board-card{background:var(--card);border:1px solid var(--line);border-radius:15px;overflow:hidden}.board-head{padding:16px 22px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px}.board-title{display:flex;align-items:center;gap:10px}.board-title h2{font-size:14px;font-weight:500}.status-badge{padding:3px 9px;background:#f0f0e8;color:#7e8476;font-size:10px;border-radius:20px;white-space:nowrap}.status-badge.walking{background:#e5eddf;color:#46603d}.status-badge.blocked{background:#f5eadd;color:#976e40}.view-controls{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:11px}.view-controls label{display:flex;align-items:center;gap:5px;cursor:pointer}.view-controls input{accent-color:#617659;width:13px;height:13px;margin:0}.board-scroll{overflow-x:auto;overscroll-behavior-x:contain;background:#f9f8f3}.canvas-wrap{width:100%;min-width:580px;position:relative;aspect-ratio:1100/750}canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;user-select:none}.board-toolbar{border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 20px;flex-wrap:wrap}.play-actions{display:flex;align-items:center;gap:8px}.play-actions .button{min-height:39px}.speed{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:11px}.speed input{width:90px;accent-color:#63795a}.readout{font-size:11px;color:var(--muted);min-width:56px;text-align:right}.feedback{margin:0 20px 17px;border-radius:9px;padding:10px 13px;background:#f0f2e9;display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#63725a;min-height:43px}.feedback.warn{background:#f6eee2;color:#967649}.feedback-icon{font-size:14px;line-height:1.6}.feedback p{flex:1}.below{display:grid;grid-template-columns:1.12fr 1fr;gap:18px;margin-top:16px}.guide,.rules{padding:17px 20px;background:#fbfaf6;border:1px solid var(--line);border-radius:12px}.guide h3,.rules h3{font-size:12px;font-weight:500;margin-bottom:9px}.guide p,.rules p{font-size:11px;color:var(--muted);line-height:1.9}.guide strong{font-weight:500;color:#627358}.steps{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted)}.steps span{display:flex;align-items:center;gap:6px}.steps i{font-style:normal;width:18px;height:18px;border-radius:50%;border:1px solid #d8dece;display:grid;place-items:center;color:#6d7b62;font-size:10px}.foot{display:flex;justify-content:space-between;gap:20px;margin-top:20px;color:#939889;font-size:10px}.mobile-note{display:none}dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);width:min(640px,calc(100vw - 32px));padding:28px;max-height:85vh;overflow:auto;box-shadow:0 20px 100px #27332333}dialog::backdrop{background:#26302255;backdrop-filter:blur(4px)}.dialog-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}dialog h2{font-size:21px;font-weight:500}dialog p,dialog li{font-size:13px;color:#737d6b;margin:12px 0}dialog ol{padding-left:22px}.key{background:#eeefe7;border:1px solid #dfe3d4;border-radius:4px;padding:1px 5px;font-size:10px;color:#68775e}.toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;padding:10px 18px;background:#35432fee;color:#fff;border-radius:10px;font-size:12px;z-index:10;transition:opacity .2s,transform .2s;max-width:90vw;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:1600px){.app{padding-top:32px}.intro{margin-top:38px}.workspace{grid-template-columns:240px minmax(0,1fr)}}
+@media(max-width:1050px){.app{padding:20px}.workspace{grid-template-columns:192px minmax(0,1fr);gap:12px}.tools{padding:16px 12px}.board-head{padding:14px}.board-toolbar{padding:12px 14px}.feedback{margin:0 14px 14px}.below{gap:12px}.version{font-size:10px}.view-controls{gap:8px}.button{padding:8px 10px}.play-actions{gap:6px}.play-actions .button{font-size:11px}.readout{display:none}}
+@media(max-width:760px){.app{padding:16px 12px}.header{gap:8px}.version{display:none}.brand strong{font-size:20px}.header-actions{gap:3px}.header-actions .button{font-size:11px;padding:6px 9px}.header-actions .button svg{display:none}.intro{margin:25px 0 17px;align-items:flex-start}.intro h1{font-size:24px}.intro p{font-size:11px;max-width:280px}.local-badge{font-size:10px;padding-top:6px}.workspace{display:flex;flex-direction:column;gap:12px}.tools{width:100%;padding:12px}.section-label{margin-bottom:8px}.palette{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.tool{min-height:53px;font-size:10px;gap:2px}.tool svg{width:19px;height:19px}.tool small{display:none}.tool-note{min-height:0;margin-top:8px;font-size:10px}.tools .divider{margin:10px 0}.tool-options{margin-top:6px}.marker-buttons{grid-template-columns:1fr 1fr;max-width:260px}.marker-buttons .button{font-size:11px;padding:6px}.selection{min-height:0}.small-actions{position:absolute;right:12px;bottom:12px;margin:0}.tools{position:relative}.board-card{width:100%}.board-head{padding:12px;gap:8px}.board-title{gap:6px}.board-title h2{font-size:12px}.view-controls{font-size:10px}.status-badge{font-size:9px}.board-toolbar{padding:10px;gap:10px}.play-actions{width:100%}.play-actions .button{flex:1;padding:8px 6px;min-height:38px}.play-actions .button svg{width:15px}.speed{width:100%;justify-content:flex-end}.speed input{width:110px}.below{grid-template-columns:1fr;margin-top:12px;gap:10px}.guide,.rules{padding:13px 15px}.foot{font-size:9px;flex-direction:column;gap:5px}.mobile-note{display:block;font-size:10px;color:var(--muted);padding:0 12px 8px;background:#f9f8f3}.selection{max-width:calc(100% - 120px)}.local-badge .dot{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+ <header class="header">
+  <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 30 30" fill="none"><path d="M5 21V9h20v12z" stroke="#6b7f61" stroke-width="1.5"/><path d="M7 18c5-6 7 5 16-3" stroke="#7d9672" stroke-width="1.6"/><circle cx="19" cy="11" r="2" fill="#b9c6a5"/></svg></span><strong>一隅</strong><span class="version">沙盘游戏 / MVP 0.1</span></div>
+  <div class="header-actions"><button class="button subtle" id="helpBtn">怎么玩</button><button class="button" id="demoBtn">示例沙盘</button><button class="button" id="blankBtn">空白沙盘</button><button class="button" id="exportBtn">保存图片</button></div>
+ </header>
+ <section class="intro"><div><h1>先摆一处，再走一遍。</h1><p>改变一条路、一道门或一个停留点，看看旅人会怎样走。</p></div><span class="local-badge"><i class="dot"></i><span id="saveState">离线可用 · 自动保存在本机</span></span></section>
+ <main class="workspace">
+  <aside class="tools" aria-label="沙盘工具">
+   <p class="section-label">地形与物件</p><div class="palette" id="palette"></div>
+   <p class="tool-note" id="toolNote">点击门可开关；拖动物件可移动。也可以拖动起点和终点。</p>
+   <div class="tool-options" id="bridgeOptions" hidden><span>桥的方向</span><button class="button" id="rotateToolBtn">横向 ↔</button><span class="key">R</span></div>
+   <div class="divider"></div><p class="section-label">安排这一段路</p>
+   <div class="marker-buttons"><button class="button" id="startTool"><span class="marker-symbol">起</span>设置起点</button><button class="button" id="goalTool"><span class="marker-symbol goal">终</span>设置终点</button></div>
+   <div class="divider"></div><p class="selection" id="selection">小提示：每格放一个物件。桥需要铺在水面上。</p>
+   <div class="small-actions"><button class="button" id="undoBtn" title="撤销 Ctrl+Z" disabled>↶ 撤销</button><button class="button" id="redoBtn" title="重做 Ctrl+Shift+Z" disabled>↷ 重做</button></div>
+  </aside>
+  <section class="board-card" aria-label="沙盘场景">
+   <div class="board-head"><div class="board-title"><h2>我的沙盘</h2><span class="status-badge" id="statusBadge">等待试走</span></div><div class="view-controls"><label><input type="checkbox" id="routeToggle">显示路线</label><label><input type="checkbox" id="gridToggle">显示网格</label></div></div>
+   <div class="board-scroll"><div class="canvas-wrap"><canvas id="board" width="1100" height="750" aria-label="沙盘画布。选择左侧工具后点击放置；查看工具下可拖动物件、点击小门开关。" tabindex="0"></canvas></div></div>
+   <p class="mobile-note">小屏可左右滑动画布下方滚动条；点选工具后再操作沙盘。</p>
+   <div class="board-toolbar"><div class="play-actions"><button class="button primary" id="playBtn"><svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z" fill="currentColor" stroke="none"/></svg><span>开始试走</span></button><button class="button" id="pauseBtn" disabled>暂停</button><button class="button" id="homeBtn">回到起点</button><button class="button" id="previewBtn">预览路线</button></div><div class="speed"><label for="speed">速度</label><input id="speed" type="range" min="1" max="6" step="1" value="3" aria-label="旅人行走速度"><span id="speedLabel">3 格/秒</span><span class="readout" id="readout">22 × 14</span></div></div>
+   <div class="feedback" id="feedback" role="status" aria-live="polite"><span class="feedback-icon" aria-hidden="true">↗</span><p id="feedbackText">示例里有一道关闭的小门。用“查看 / 移动”点开它，再让旅人走到长椅。</p></div>
+  </section>
+ </main>
+ <section class="below"><article class="guide"><h3>第一轮小实验：进入庭院，在长椅停留</h3><div class="steps"><span><i>1</i>点击庭院左侧小门</span><span><i>2</i>开始试走</span><span><i>3</i>再关门或移走一段桥</span></div><p style="margin-top:8px">可以随时暂停、改摆、继续。<strong>暂停后修改场景，继续时会从旅人当前位置重新寻路。</strong></p></article><article class="rules"><h3>这个世界的规则</h3><p>水、树、石头、围栏会挡路；门打开后可通过；桥只沿木板方向通行。把终点设在长椅上，旅人会走到椅旁，再坐下。没有路线时留在原地，浅绿色显示当前可达区域。</p></article></section>
+ <footer class="foot"><span>空间摆置与行走反馈原型 · 场景含义由你决定</span><span>空格：试走 / 暂停　·　Ctrl+Z：撤销　·　R：旋转桥　·　右键：移除物件</span></footer>
+</div>
+<dialog id="help"><div class="dialog-top"><h2>给空间一个小小的变化</h2><button class="button" id="closeHelp">关闭 ×</button></div><ol><li>使用“查看 / 移动”，点击示例庭院左边带“门”标记的物件，将门打开。</li><li>点击“开始试走”。旅人会跨过桥、穿过门，在长椅上停留。</li><li>点击“回到起点”，关门、移走一段桥，或重新安排物件，再试一次。</li><li>选择“设置起点 / 终点”，点击沙盘。终点可以是可通行的空地，也可以是长椅。</li><li>选择物件后点击放置；沙地、水域、围栏、橡皮支持按住拖动连续操作。查看模式下可拖动物件。</li></ol><p>试走时先暂停再编辑。暂停会让旅人停到最近的格子中心；继续时按新布局重新计算路线。撤销和重做会让旅人回到起点。</p><p>桥只能放在水上。横向桥只能左右通行，纵向桥只能上下通行；宽河需要连续铺设多段桥。选中桥后按 <span class="key">R</span> 旋转，也可以切换放置工具的方向。</p><p>场景自动保存在当前浏览器中。“保存图片”导出当前画面；HTML 本身可离线使用。</p></dialog>
+<div class="toast" id="toast" role="status"></div>
+<noscript>请启用浏览器的 JavaScript 来使用这个原型。</noscript>
+<script id="game">
+(()=>{
+'use strict';
+const COLS=22,ROWS=14,N=COLS*ROWS;
+const key=p=>p.y*COLS+p.x, same=(a,b)=>!!a&&!!b&&a.x===b.x&&a.y===b.y;
+const inside=(x,y)=>Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&x<COLS&&y>=0&&y<ROWS;
+const clone=s=>JSON.parse(JSON.stringify(s));
+function emptyScene(){return {version:1,terrain:Array(N).fill(0),objects:Array(N).fill(null),start:{x:4,y:9},goal:{x:17,y:5}}}
+function demoScene(){
+ const s=emptyScene();
+ for(let y=0;y<ROWS;y++)for(const x of [10,11])s.terrain[y*COLS+x]=1;
+ for(const x of [10,11])s.objects[7*COLS+x]={type:'bridge',dir:'h'};
+ for(let x=14;x<=19;x++)for(const y of [3,8])s.objects[y*COLS+x]={type:'fence'};
+ for(let y=4;y<8;y++)for(const x of [14,19])s.objects[y*COLS+x]={type:'fence'};
+ s.objects[6*COLS+14]={type:'gate',open:false};s.objects[5*COLS+17]={type:'bench',dir:'h'};
+ for(const [x,y] of [[3,3],[4,2],[5,3],[6,11],[18,10],[19,11],[16,1]])s.objects[y*COLS+x]={type:'tree'};
+ for(const [x,y] of [[7,4],[4,11],[20,9]])s.objects[y*COLS+x]={type:'stone'};
+ return s;
+}
+function canEnter(s,p){
+ if(!inside(p.x,p.y))return false;
+ const i=key(p),o=s.objects[i];
+ if(s.terrain[i]===1&&o?.type!=='bridge')return false;
+ return !o||o.type==='bridge'||o.type==='gate'&&o.open;
+}
+function canStep(s,a,b){
+ if(!canEnter(s,a)||!canEnter(s,b)||Math.abs(a.x-b.x)+Math.abs(a.y-b.y)!==1)return false;
+ for(const p of [a,b]){const o=s.objects[key(p)];if(o?.type==='bridge'&&(o.dir==='h'?a.y!==b.y:a.x!==b.x))return false;}
+ return true;
+}
+function neighbors(p){return [{x:p.x+1,y:p.y},{x:p.x,y:p.y+1},{x:p.x-1,y:p.y},{x:p.x,y:p.y-1}].filter(q=>inside(q.x,q.y))}
+function findPath(s,from=s.start){
+ if(!canEnter(s,from))return {path:null,visited:[],reason:'start'};
+ const isBench=s.objects[key(s.goal)]?.type==='bench';
+ const ends=isBench?neighbors(s.goal).filter(p=>canEnter(s,p)):[s.goal].filter(p=>canEnter(s,p));
+ const targets=new Set(ends.map(key));
+ const queue=[{...from}],previous=new Map([[key(from),null]]);let found=null;
+ for(let head=0;head<queue.length;head++){
+  const p=queue[head];if(targets.has(key(p))){found=p;break;}
+  for(const q of neighbors(p)){if(!previous.has(key(q))&&canStep(s,p,q)){previous.set(key(q),p);queue.push(q);}}
+ }
+ if(!found)return {path:null,visited:queue,reason:'unreachable'};
+ const path=[];for(let p=found;p;p=previous.get(key(p)))path.push(p);path.reverse();
+ return {path,visited:queue,reason:null};
+}
+function validScene(s){
+ const types=['bridge','fence','gate','tree','stone','bench'];
+ return s?.version===1&&Array.isArray(s.terrain)&&s.terrain.length===N&&s.terrain.every(v=>v===0||v===1)&&Array.isArray(s.objects)&&s.objects.length===N&&s.objects.every(o=>o===null||o&&types.includes(o.type)&&(o.type!=='bridge'||['h','v'].includes(o.dir)))&&inside(s.start?.x,s.start?.y)&&inside(s.goal?.x,s.goal?.y)&&canEnter(s,s.start)&&(canEnter(s,s.goal)||s.objects[key(s.goal)]?.type==='bench');
+}
+globalThis.SandtrayCore={COLS,ROWS,emptyScene,demoScene,canEnter,canStep,findPath,validScene};
+if(typeof document==='undefined')return;
+const $=id=>document.getElementById(id),canvas=$('board'),ctx=canvas.getContext('2d');
+const W=1100,H=750,CELL=42,LEFT=88,TOP=66,BW=COLS*CELL,BH=ROWS*CELL,STORAGE='yiyu-sandtray-mvp-v1';
+const icons={
+ select:'<path d="m5 3 14 10-7 1-3 7z"/>',sand:'<path d="M3 16c3-5 5 3 9-2s6-1 9-3M4 20h16"/><circle cx="6" cy="8" r=".6"/><circle cx="13" cy="7" r=".6"/><circle cx="18" cy="5" r=".6"/>',
+ water:'<path d="M3 7c3-4 6 4 9 0s6 4 9 0M3 13c3-4 6 4 9 0s6 4 9 0M3 19c3-4 6 4 9 0s6 4 9 0"/>',fence:'<path d="M5 3v18M12 3v18M19 3v18M3 8h18M3 16h18"/>',
+ gate:'<path d="M3 4v17M21 4v17M6 6h12v14H6zM9 9l6 8m0-8-6 8"/>',bridge:'<path d="M3 7h18M3 17h18M6 5v14M10 5v14M14 5v14M18 5v14"/>',
+ tree:'<path d="M12 15v7"/><path d="M8 17a5 5 0 0 1-3-9 5 5 0 0 1 9-4 5 5 0 0 1 5 7 4 4 0 0 1-5 6z"/>',bench:'<path d="M4 6h16v8H4zM3 17h18M6 17v4M18 17v4M7 9h10"/>',stone:'<path d="m3 17 3-10 9-3 6 9-4 6H7zM6 7l6 7 9-1M12 14l-5 5"/>',erase:'<path d="m3 14 9-10 9 8-8 9H9zM7 10l9 8M13 21h9"/>'};
+const toolDefs=[['select','查看 / 移动','1','点击门可开关；拖动物件可移动。也可以拖动起点和终点。'],['sand','沙地','0','点击或按住拖动铺设沙地。会移除该格的物件。'],['water','水域','2','点击或按住拖动铺水。旅人不能直接走进水里。'],['fence','围栏','3','点击放围栏，按住拖动可连续铺设。围栏会阻挡通行。'],['gate','小门','4','点击放置关闭的小门；再次点击同一扇门可开关。'],['bridge','木桥','5','桥铺在水面上。宽河需要多段连续的桥；R 键旋转方向。'],['tree','树木','6','点击种一棵树。树所在的格子不能通行，可在查看模式中拖动。'],['bench','长椅','7','点击放置长椅，再将终点设在长椅上，旅人会到椅旁坐下。'],['stone','石头','8','点击放一块石头。石头会阻挡通行。'],['erase','橡皮','E','移除物件；空水面恢复为沙地。也可以按住拖动擦除。']];
+const names={fence:'围栏',gate:'小门',bridge:'木桥',tree:'树木',bench:'长椅',stone:'石头'};
+let scene=demoScene(),tool='select',bridgeDir='h',selected=null,hover=null,gesture=null,undo=[],redo=[],mode='idle',showRoute=false,showGrid=false,speed=3;
+let actor={...scene.start,cell:{...scene.start},seated:false},route=null,runIndex=0,travel=0,phase='walk',seatT=0,seatFrom=null,search=null,dirty=true,storageAvailable=true,lastTime=0,lastDraw=0,toastTimer;
+let restored=false;
+try{const saved=JSON.parse(localStorage.getItem(STORAGE));if(validScene(saved)){scene=saved;restored=true}}catch{storageAvailable=false}
+actor={...scene.start,cell:{...scene.start},seated:false};
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(scene));storageAvailable=true}catch{storageAvailable=false}$('saveState').textContent=storageAvailable?'离线可用 · 自动保存在本机':'离线可用 · 本机保存暂不可用'}
+function toast(text){$('toast').textContent=text;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2400)}
+function message(text,warn=false){$('feedbackText').textContent=text;$('feedback').classList.toggle('warn',warn);dirty=true}
+function origin(){return mode==='paused'?actor.cell:scene.start}
+function clearRun(){mode='idle';actor={...scene.start,cell:{...scene.start},seated:false};route=null;runIndex=0;travel=0;phase='walk';search=null;dirty=true}
+function refreshSearch(){search=findPath(scene,origin());dirty=true}
+function updateUI(){
+ const isRun=mode==='walking';
+ $('playBtn').disabled=isRun;$('playBtn').querySelector('span').textContent=mode==='paused'?'继续试走':mode==='arrived'?'再走一次':'开始试走';
+ $('pauseBtn').disabled=!isRun;$('pauseBtn').textContent=mode==='paused'?'已暂停':'暂停';
+ $('undoBtn').disabled=isRun||!undo.length;$('redoBtn').disabled=isRun||!redo.length;
+ document.querySelectorAll('[data-tool]').forEach(b=>{b.classList.toggle('active',b.dataset.tool===tool);b.setAttribute('aria-pressed',String(b.dataset.tool===tool));b.disabled=isRun});
+ $('startTool').classList.toggle('active',tool==='start');$('goalTool').classList.toggle('active',tool==='goal');$('startTool').disabled=isRun;$('goalTool').disabled=isRun;
+ $('rotateToolBtn').disabled=isRun;$('demoBtn').disabled=isRun;$('blankBtn').disabled=isRun;$('previewBtn').disabled=isRun;
+ $('bridgeOptions').hidden=tool!=='bridge';$('rotateToolBtn').textContent=bridgeDir==='h'?'横向 ↔':'纵向 ↕';
+ const status={idle:'等待试走',walking:'行走中',paused:'已暂停 · 可以编辑',arrived:actor.seated?'已到达 · 坐下停留':'已到达',blocked:'暂时没有通路'};
+ $('statusBadge').textContent=status[mode];$('statusBadge').className='status-badge '+mode;
+ if(selected&&scene.objects[key(selected)]){const o=scene.objects[key(selected)];$('selection').innerHTML='<strong>已选中：'+names[o.type]+'</strong><br>'+({gate:o.open?'门已打开，点击可关闭。':'门已关闭，点击可打开。',bridge:'按 R 旋转；拖动到水面可移动。',bench:'可设为终点；拖动长椅会带走其终点。'}[o.type]||'拖动可移动；右键或橡皮可移除。');}
+ else $('selection').textContent='小提示：每格放一个物件。桥需要铺在水面上。';
+ const distance=search?.path?search.path.length-1:null;
+ $('readout').textContent=isRun&&route?Math.min(runIndex,route.length-1)+' / '+(route.length-1)+' 步':distance!==null&&showRoute?distance+' 步':'22 × 14';
+ canvas.style.cursor=isRun?'default':tool==='select'?'grab':'crosshair';dirty=true;
+}
+function setTool(t){if(mode==='walking')return;tool=t;selected=null;$('toolNote').textContent=t==='start'?'点击可通行的格子设置起点。再次试走将从这里出发。':t==='goal'?'点击可通行的空地或长椅设置终点。':toolDefs.find(d=>d[0]===t)?.[3]||'';updateUI()}
+function commit(before,text){
+ if(JSON.stringify(before)===JSON.stringify(scene))return false;
+ undo.push(before);if(undo.length>60)undo.shift();redo=[];
+ if(mode!=='paused')clearRun();refreshSearch();save();if(text)message(text);updateUI();return true;
+}
+function protectedCell(p){return same(p,scene.start)||same(p,scene.goal)||mode==='paused'&&same(p,actor.cell)}
+function fail(text){message(text,true);return false}
+function place(p,t){
+ if(!inside(p.x,p.y))return false;
+ const i=key(p),old=scene.objects[i];
+ if(t==='start'||t==='goal'){
+  if(t==='start'?!canEnter(scene,p):!canEnter(scene,p)&&old?.type!=='bench')return fail(t==='start'?'起点需要放在可通行的位置。':'终点请选择可通行的空地或长椅。');
+  if(same(scene[t],p))return false;scene[t]={...p};return true;
+ }
+ if(protectedCell(p))return fail('这里是起点、终点或旅人停留的位置。请先移动标记，或让旅人回到起点。');
+ if(t==='erase'){
+  if(old){scene.objects[i]=null;return true}if(scene.terrain[i]===1){scene.terrain[i]=0;return true}return false;
+ }
+ if(t==='sand'||t==='water'){
+  const water=t==='water'?1:0;if(scene.terrain[i]===water&&!old)return false;
+  scene.terrain[i]=water;scene.objects[i]=null;return true;
+ }
+ if(t==='bridge'){
+  if(scene.terrain[i]!==1)return fail('木桥需要放在水面上；宽河可连续铺设多段桥。');
+  const o={type:'bridge',dir:bridgeDir};if(JSON.stringify(old)===JSON.stringify(o))return false;scene.objects[i]=o;return true;
+ }
+ if(scene.terrain[i]===1)return fail('这个物件需要放在沙地上。水面请使用木桥。');
+ const o=t==='gate'?{type:t,open:false}:t==='bench'?{type:t,dir:'h'}:{type:t};
+ if(JSON.stringify(old)===JSON.stringify(o))return false;scene.objects[i]=o;return true;
+}
+function toggleGate(p){
+ const o=scene.objects[key(p)];if(o?.type!=='gate')return;
+ if(o.open&&protectedCell(p))return fail('门的位置正被起点、终点或旅人占用，请先移开。');
+ const before=clone(scene);o.open=!o.open;selected={...p};commit(before,o.open?'小门已打开，这里现在可以通行。':'小门已关闭，路线会随之改变。');
+}
+function rotate(){
+ if(mode==='walking')return;
+ if(tool==='bridge'){bridgeDir=bridgeDir==='h'?'v':'h';updateUI();return;}
+ const o=selected&&scene.objects[key(selected)];
+ if(o&&['bridge','bench'].includes(o.type)){const before=clone(scene);o.dir=o.dir==='h'?'v':'h';commit(before,o.type==='bridge'?'桥已旋转，通行方向随之改变。':'长椅已旋转。');}
+ else toast('选择木桥工具，或先选中一段桥，再按 R 旋转。');
+}
+function preview(){
+ if(mode==='walking')return;refreshSearch();showRoute=true;$('routeToggle').checked=true;
+ if(search.path){message('找到一条 '+(search.path.length-1)+' 步的路线。点击“'+(mode==='paused'?'继续试走':'开始试走')+'”观察旅人的行动。');}
+ else{if(mode!=='paused')mode='blocked';message('目前没有可通行路线。浅绿色是可达区域，可以检查门、桥和围栏。',true);}
+ updateUI();
+}
+function play(){
+ if(mode==='walking')return;
+ const from=mode==='paused'?{...actor.cell}:{...scene.start};search=findPath(scene,from);
+ if(!search.path){mode=mode==='paused'?'paused':'blocked';actor={...from,cell:{...from},seated:false};route=null;showRoute=true;$('routeToggle').checked=true;message('目前没有可通行路线。旅人留在原地；请检查小门、木桥或障碍。',true);updateUI();return;}
+ actor={...from,cell:{...from},seated:false};route=search.path;runIndex=0;travel=0;phase='walk';seatT=0;mode='walking';showRoute=true;$('routeToggle').checked=true;
+ message('旅人正在按当前布局行走。需要改摆时，先点击“暂停”。');updateUI();
+ if(route.length===1)beginArrival();
+}
+function pause(){
+ if(mode!=='walking')return;
+ const at=route[Math.min(runIndex+(phase==='walk'&&travel>=.5?1:0),route.length-1)];
+ actor={...at,cell:{...at},seated:false};mode='paused';phase='walk';travel=0;refreshSearch();
+ message('已暂停在格子中心，可以编辑场景；继续时会从这里重新寻路。');updateUI();
+}
+function beginArrival(){
+ if(scene.objects[key(scene.goal)]?.type==='bench'){phase='seat';seatT=0;seatFrom={x:actor.x,y:actor.y};}
+ else arrive();
+}
+function arrive(){mode='arrived';message(actor.seated?'旅人已到达长椅并坐下。可以保留这个安排，或改动场景再试一次。':'旅人已到达你指定的位置。可以保留这个安排，或改动场景再试一次。');updateUI();}
+function update(dt){
+ if(mode!=='walking')return;
+ if(phase==='seat'){
+  seatT=Math.min(1,seatT+dt*2.8);const q=seatT*seatT*(3-2*seatT);
+  actor.x=seatFrom.x+(scene.goal.x-seatFrom.x)*q;actor.y=seatFrom.y+(scene.goal.y-seatFrom.y)*q;
+  if(seatT===1){actor.seated=true;arrive();}return;
+ }
+ travel+=dt*speed;
+ while(travel>=1&&runIndex<route.length-1){travel--;runIndex++;actor.cell={...route[runIndex]};}
+ if(runIndex>=route.length-1){actor.x=route[runIndex].x;actor.y=route[runIndex].y;travel=0;beginArrival();return;}
+ const a=route[runIndex],b=route[runIndex+1];actor.x=a.x+(b.x-a.x)*travel;actor.y=a.y+(b.y-a.y)*travel;
+ $('readout').textContent=runIndex+' / '+(route.length-1)+' 步';
+}
+function historyStep(back){
+ if(mode==='walking')return;const source=back?undo:redo,target=back?redo:undo;if(!source.length)return;
+ target.push(clone(scene));scene=source.pop();selected=null;clearRun();refreshSearch();save();message((back?'已撤销':'已重做')+'，旅人已回到起点。');updateUI();
+}
+function loadScene(next,label){if(mode==='walking')return;const before=clone(scene);scene=next;selected=null;clearRun();commit(before,label);updateUI()}
+function boardPoint(e){const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}}
+function cellAt(point){const x=Math.floor((point.x-LEFT)/CELL),y=Math.floor((point.y-TOP)/CELL);return inside(x,y)?{x,y}:null}
+function canEdit(){if(mode!=='walking')return true;toast('先暂停旅人，再编辑沙盘。');return false}
+canvas.addEventListener('pointerdown',e=>{
+ if(e.button!==0||!canEdit())return;const point=boardPoint(e),p=cellAt(point);if(!p)return;
+ e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);
+ if(tool==='select'){
+  const o=scene.objects[key(p)],kind=o?'object':same(p,scene.start)?'start':same(p,scene.goal)?'goal':null;
+  selected=o?{...p}:null;gesture={kind:'select',moveKind:kind,from:{...p},point,before:clone(scene),moved:false,object:o?clone(o):null};updateUI();
+ }else{
+  gesture={kind:'paint',before:clone(scene),last:key(p),changed:false,single:['gate','start','goal'].includes(tool)};
+  if(tool==='gate'&&scene.objects[key(p)]?.type==='gate'){gesture=null;toggleGate(p);return;}
+  gesture.changed=place(p,tool);dirty=true;
+ }
+});
+canvas.addEventListener('pointermove',e=>{
+ const point=boardPoint(e),p=cellAt(point);hover=p;
+ if(gesture){
+  if(gesture.kind==='select'&&Math.hypot(point.x-gesture.point.x,point.y-gesture.point.y)>6)gesture.moved=true;
+  if(gesture.kind==='paint'&&p&&!gesture.single&&key(p)!==gesture.last){gesture.last=key(p);gesture.changed=place(p,tool)||gesture.changed;}
+ }
+ dirty=true;
+});
+function endPointer(e,cancel=false){
+ if(!gesture)return;const g=gesture;gesture=null;const p=cellAt(boardPoint(e));
+ if(g.kind==='paint'){
+  if(g.changed)commit(g.before,tool==='start'?'起点已更新。':tool==='goal'?'终点已更新。':mode==='paused'?'场景已调整。点击“继续试走”，观察新的路线。':'场景已调整，可以预览路线或开始试走。');
+ }else if(!cancel&&g.moved&&g.moveKind&&p&&!same(p,g.from)){
+  if(g.moveKind==='start'||g.moveKind==='goal'){
+   if(place(p,g.moveKind))commit(g.before,g.moveKind==='start'?'起点已移动。':'终点已移动。');
+  }else{
+   const o=scene.objects[key(g.from)];
+   if(same(g.from,scene.start)||mode==='paused'&&same(g.from,actor.cell))fail('这个位置被起点或旅人占用。请先移动起点，或让旅人回到起点。');
+   else if(scene.objects[key(p)]||same(p,scene.start)||same(p,scene.goal)||mode==='paused'&&same(p,actor.cell))fail('这个位置已被占用，请换一处。');
+   else if(o.type==='bridge'?scene.terrain[key(p)]!==1:scene.terrain[key(p)]===1)fail(o.type==='bridge'?'桥需要移动到水面上。':'这个物件需要移动到沙地上。');
+   else{scene.objects[key(p)]=o;scene.objects[key(g.from)]=null;if(same(scene.goal,g.from))scene.goal={...p};selected={...p};commit(g.before,names[o.type]+'已移动。');}
+  }
+ }else if(!cancel&&!g.moved&&g.kind==='select'){
+  if(scene.objects[key(g.from)]?.type==='gate')toggleGate(g.from);
+  else if(selected)updateUI();
+ }
+ if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);dirty=true;
+}
+canvas.addEventListener('pointerup',e=>endPointer(e));canvas.addEventListener('pointercancel',e=>endPointer(e,true));
+canvas.addEventListener('pointerleave',()=>{if(!gesture)hover=null;dirty=true});
+canvas.addEventListener('contextmenu',e=>{e.preventDefault();if(!canEdit())return;const p=cellAt(boardPoint(e));if(!p)return;const before=clone(scene);if(place(p,'erase'))commit(before,'已移除，可使用撤销恢复。')});
+function roundRect(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}}
+function point(p){return {x:LEFT+(p.x+.5)*CELL,y:TOP+(p.y+.5)*CELL}}
+function ellipse(x,y,rx,ry,color){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()}
+function line(x1,y1,x2,y2,color,width=2){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke()}
+function objectAt(x,y){return inside(x,y)?scene.objects[y*COLS+x]:null}
+function drawObject(o,p,alpha=1){
+ const c=point(p);ctx.save();ctx.translate(c.x,c.y);ctx.globalAlpha=alpha;
+ if(o.type==='tree'){
+  ellipse(3,9,18,11,'#76634525');roundRect(-3,-2,7,20,2,'#9b8061');
+  ellipse(-8,-6,13,14,'#799363');ellipse(8,-5,14,16,'#718a5e');ellipse(0,-15,14,13,'#8ca276');ellipse(-5,-18,7,5,'#a4b88b88');
+ }else if(o.type==='stone'){
+  ellipse(2,9,15,7,'#75694c25');ctx.beginPath();ctx.moveTo(-16,3);ctx.lineTo(-10,-11);ctx.lineTo(4,-15);ctx.lineTo(16,-2);ctx.lineTo(11,11);ctx.lineTo(-8,12);ctx.closePath();ctx.fillStyle='#a0a397';ctx.fill();ctx.beginPath();ctx.moveTo(-10,-11);ctx.lineTo(4,-15);ctx.lineTo(1,0);ctx.lineTo(-16,3);ctx.fillStyle='#b9bcb0';ctx.fill();line(1,0,11,11,'#8f9487',1.5);
+ }else if(o.type==='bridge'){
+  if(o.dir==='v')ctx.rotate(Math.PI/2);
+  roundRect(-23,-13,46,28,2,'#89704f33');roundRect(-22,-14,44,25,2,'#bc9c70');
+  for(let x=-17;x<22;x+=9)line(x,-12,x,9,'#9c7d54',1.4);
+  line(-22,-15,22,-15,'#8b724f',3);line(-22,13,22,13,'#8b724f',3);line(-21,-11,21,-11,'#dec49a',1);
+ }else if(o.type==='fence'||o.type==='gate'){
+  const vertical=[objectAt(p.x,p.y-1),objectAt(p.x,p.y+1)].filter(n=>n&&['fence','gate'].includes(n.type)).length>[objectAt(p.x-1,p.y),objectAt(p.x+1,p.y)].filter(n=>n&&['fence','gate'].includes(n.type)).length;
+  if(vertical)ctx.rotate(Math.PI/2);line(-20,10,20,10,'#8b704e22',6);
+  if(o.type==='gate'){
+   roundRect(-21,-10,5,24,1,'#927957');roundRect(16,-10,5,24,1,'#927957');
+   ctx.save();ctx.translate(-16,0);if(o.open)ctx.rotate(-Math.PI*.38);
+   roundRect(0,-8,32,19,2,o.open?'#c2ac7e':'#aa8a59');line(2,-6,30,9,'#e2cc9e',2);line(2,9,30,-6,'#8e744d',1.5);ellipse(27,1,1.6,1.6,'#6f5b3e');ctx.restore();
+  }else{for(const x of [-16,0,16])roundRect(x-2,-10,5,24,1,'#a18a64');line(-22,-4,22,-4,'#c2ab80',4);line(-22,7,22,7,'#b39a72',4);}
+ }else if(o.type==='bench'){
+  if(o.dir==='v')ctx.rotate(Math.PI/2);ellipse(2,9,20,7,'#75694c24');
+  line(-13,1,-13,15,'#7b7057',3);line(13,1,13,15,'#7b7057',3);roundRect(-18,-13,36,10,2,'#9e855e');line(-16,-9,16,-9,'#c8ac7e',1);roundRect(-19,0,38,9,2,'#b79a6e');line(-17,3,17,3,'#d1b98f',1);
+ }
+ ctx.restore();
+}
+function marker(p,label,color){const c=point(p);ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1.7;ctx.setLineDash([4,4]);ctx.beginPath();ctx.arc(c.x,c.y,18,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);roundRect(c.x-10,c.y+20,20,17,5,color);ctx.fillStyle='#fff';ctx.font='10px "Microsoft YaHei",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,c.x,c.y+28.5);ctx.restore()}
+function drawActor(time){
+ const c=point(actor),moving=mode==='walking'&&phase==='walk',bob=moving?Math.sin(time*.018)*1.4:0;
+ ctx.save();ctx.translate(c.x,c.y+bob);ellipse(1,12,10,5,'#514c3533');
+ const stride=moving?Math.sin(time*.02)*4:0;
+ ctx.lineCap='round';
+ if(actor.seated){line(-4,6,-8,11,'#45543d',4);line(4,6,8,11,'#45543d',4)}else{line(-3,5,-4-stride*.3,14+stride,'#45543d',4);line(3,5,4+stride*.3,14-stride,'#45543d',4)}
+ roundRect(-8,-12,16,21,6,'#5a7453');line(-8,-5,-11,4-stride*.45,'#7c926b',4);line(8,-5,11,4+stride*.45,'#7c926b',4);
+ ellipse(0,-17,7,7,'#ebceaa');ellipse(0,-21,8,4,'#6a805c');roundRect(-9,-22,19,3,2,'#526b49');
+ ellipse(-2,-16,0.75,0.75,'#6e644e');ellipse(2,-16,0.75,0.75,'#6e644e');ctx.restore();
+}
+function draw(time){
+ const r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),pw=Math.round(r.width*dpr),ph=Math.round(r.height*dpr);
+ if(canvas.width!==pw||canvas.height!==ph){canvas.width=pw;canvas.height=ph}
+ ctx.setTransform(pw/W,0,0,ph/H,0,0);ctx.clearRect(0,0,W,H);ctx.fillStyle='#f9f8f3';ctx.fillRect(0,0,W,H);
+ ctx.save();ctx.shadowColor='#786b4533';ctx.shadowBlur=35;ctx.shadowOffsetY=17;roundRect(LEFT-22,TOP-22,BW+44,BH+56,20,'#bda786');ctx.restore();
+ roundRect(LEFT-22,TOP-22,BW+44,BH+42,19,'#cdbb9a');roundRect(LEFT-14,TOP-14,BW+28,BH+28,12,'#ded0b2');roundRect(LEFT-3,TOP-3,BW+6,BH+6,5,'#bca784');
+ ctx.save();ctx.beginPath();ctx.rect(LEFT,TOP,BW,BH);ctx.clip();
+ for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
+  const i=y*COLS+x,px=LEFT+x*CELL,py=TOP+y*CELL,hash=(x*73+y*191)%11;
+  ctx.fillStyle=scene.terrain[i]===1?['#9fc4ca','#a3c8cd','#a6c9ce'][hash%3]:['#e6d7b7','#e7d8b9','#e5d6b5','#e8d9ba'][hash%4];ctx.fillRect(px,py,CELL+.5,CELL+.5);
+  if(scene.terrain[i]===0){ctx.fillStyle='#c3ac7d44';for(let k=0;k<5;k++){const dx=(x*17+y*5+k*11)%38,dy=(x*7+y*19+k*17)%38;ctx.fillRect(px+dx+2,py+dy+2,1,1)}}
+  else{ctx.strokeStyle='#d5e8e866';ctx.lineWidth=1;const shift=Math.sin(time*.0008+x+y)*3;ctx.beginPath();ctx.moveTo(px+9+shift,py+17);ctx.quadraticCurveTo(px+15+shift,py+13,px+23+shift,py+17);ctx.stroke();}
+ }
+ if((mode==='blocked'||mode==='paused'&&search&&!search.path)&&search?.visited){ctx.fillStyle='#7396601b';for(const p of search.visited)ctx.fillRect(LEFT+p.x*CELL,TOP+p.y*CELL,CELL,CELL)}
+ if(showGrid){ctx.strokeStyle='#7d704026';ctx.lineWidth=.7;for(let x=0;x<=COLS;x++)line(LEFT+x*CELL,TOP,LEFT+x*CELL,TOP+BH,'#7d704026',.7);for(let y=0;y<=ROWS;y++)line(LEFT,TOP+y*CELL,LEFT+BW,TOP+y*CELL,'#7d704026',.7)}
+ const path=mode==='walking'||mode==='arrived'?route:search?.path;
+ if(path&&showRoute&&path.length){ctx.save();ctx.beginPath();path.forEach((p,i)=>{const c=point(p);i?ctx.lineTo(c.x,c.y):ctx.moveTo(c.x,c.y)});ctx.strokeStyle='#fffdf0b8';ctx.lineWidth=9;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();ctx.setLineDash([3,9]);ctx.strokeStyle='#6d865b';ctx.lineWidth=2.7;ctx.stroke();ctx.restore();}
+ for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const o=scene.objects[y*COLS+x];if(o)drawObject(o,{x,y});}
+ if(selected&&scene.objects[key(selected)]){const c=point(selected);ctx.strokeStyle='#647d54';ctx.lineWidth=2;ctx.strokeRect(c.x-20,c.y-20,40,40)}
+ marker(scene.start,'起','#69835b');marker(scene.goal,'终','#b08b50');
+ if(scene.objects[6*COLS+14]?.type==='gate'){
+  const c=point({x:14,y:6}),open=scene.objects[6*COLS+14].open;
+  roundRect(c.x-14,c.y-37,28,18,5,open?'#6e8b5d':'#b18e56');ctx.font='10px "Microsoft YaHei",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.fillText(open?'开':'门',c.x,c.y-28);
+ }
+ drawActor(time);
+ if(hover&&mode!=='walking'){
+  const c=point(hover);ctx.fillStyle=tool==='erase'?'#ad6e4a22':'#647d5520';ctx.fillRect(c.x-21,c.y-21,CELL,CELL);ctx.strokeStyle=tool==='erase'?'#b58762':'#7c936b';ctx.lineWidth=1.3;ctx.strokeRect(c.x-20,c.y-20,40,40);
+  if(gesture?.kind==='select'&&gesture.moved&&gesture.object)drawObject(gesture.object,hover,.6);
+ }
+ ctx.restore();
+ ctx.font='11px "Microsoft YaHei",sans-serif';ctx.fillStyle='#9e9d8d';ctx.textAlign='left';ctx.fillText(mode==='walking'?'观察这一段路。暂停后可以改摆。':tool==='start'?'点击一个可通行位置，设置起点。':tool==='goal'?'点击空地或长椅，设置终点。':tool==='select'?'点击小门开关 · 拖动物件移动':'点击放置 · 按住拖动连续操作',LEFT,TOP+BH+65);
+ ctx.textAlign='right';ctx.fillStyle='#a5a896';ctx.fillText('一隅 / YOUR LITTLE PLACE',LEFT+BW,TOP+BH+65);
+}
+function frame(time){const dt=lastTime?Math.min((time-lastTime)/1000,.05):0;lastTime=time;update(dt);if(dirty||mode==='walking'||time-lastDraw>120){draw(time);lastDraw=time;dirty=false}requestAnimationFrame(frame)}
+for(const [id,label,shortcut] of toolDefs){const b=document.createElement('button');b.className='tool';b.dataset.tool=id;b.title=label+' · '+shortcut;b.setAttribute('aria-pressed','false');b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+icons[id]+'</svg><span>'+label+'</span><small>'+shortcut+'</small>';b.addEventListener('click',()=>setTool(id));$('palette').appendChild(b)}
+$('startTool').addEventListener('click',()=>setTool('start'));$('goalTool').addEventListener('click',()=>setTool('goal'));$('rotateToolBtn').addEventListener('click',rotate);
+$('playBtn').addEventListener('click',play);$('pauseBtn').addEventListener('click',pause);
+$('homeBtn').addEventListener('click',()=>{clearRun();refreshSearch();message('旅人已回到起点，场景摆置保持不变。');updateUI()});
+$('previewBtn').addEventListener('click',preview);$('undoBtn').addEventListener('click',()=>historyStep(true));$('redoBtn').addEventListener('click',()=>historyStep(false));
+$('routeToggle').addEventListener('change',e=>{showRoute=e.target.checked;refreshSearch();updateUI()});$('gridToggle').addEventListener('change',e=>{showGrid=e.target.checked;dirty=true});
+$('speed').addEventListener('input',e=>{speed=Number(e.target.value);$('speedLabel').textContent=speed+' 格/秒'});
+$('demoBtn').addEventListener('click',()=>{setTool('select');loadScene(demoScene(),'示例已载入：点开庭院左侧的小门，让旅人走到长椅。')});
+$('blankBtn').addEventListener('click',()=>{setTool('select');loadScene(emptyScene(),'空白沙盘已准备好。可以先铺一条河，再试着连接两边。撤销可恢复刚才的场景。')});
+$('helpBtn').addEventListener('click',()=>$('help').showModal());$('closeHelp').addEventListener('click',()=>$('help').close());
+$('help').addEventListener('click',e=>{if(e.target===$('help')){const r=$('help').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('help').close()}});
+$('exportBtn').addEventListener('click',()=>{draw(performance.now());canvas.toBlob(blob=>{if(!blob){toast('图片保存失败，请再试一次。');return}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='一隅_我的沙盘.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('已导出当前沙盘图片。')},'image/png')});
+document.addEventListener('keydown',e=>{
+ if($('help').open||e.target.matches('input,textarea,select'))return;
+ const k=e.key.toLowerCase();
+ if((e.ctrlKey||e.metaKey)&&k==='z'){e.preventDefault();historyStep(!e.shiftKey);return;}
+ if(e.ctrlKey||e.metaKey||e.altKey)return;
+ if(e.code==='Space'){e.preventDefault();mode==='walking'?pause():play();return;}
+ if(k==='r'){rotate();return;}if(k==='escape'){setTool('select');return;}
+ const shortcuts={'1':'select','0':'sand','2':'water','3':'fence','4':'gate','5':'bridge','6':'tree','7':'bench','8':'stone','e':'erase','s':'start','g':'goal'};if(shortcuts[k])setTool(shortcuts[k]);
+});
+window.addEventListener('resize',()=>dirty=true);
+refreshSearch();save();updateUI();if(restored)message('上次的沙盘已恢复。可以继续摆置；想体验首次示例，可点右上角“示例沙盘”。');requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

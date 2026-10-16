@@ -1,0 +1,15 @@
+{
+  "name": "sandtray",
+  "version": "0.8.0",
+  "private": true,
+  "description": "一隅：保留不规则地图的离线沙盘与三点路线原型",
+  "scripts": {
+    "test": "node tests/check-core.cjs && node tests/render-scene.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "0.1.100"
+  }
+}
