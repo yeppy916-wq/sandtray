@@ -1,0 +1,52 @@
+# Local dependencies and caches
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+.npm/
+.venv/
+venv/
+
+# Local configuration, credentials and environment files
+.env
+.env.*
+!.env.example
+.npmrc
+.pypirc
+.git-credentials
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+.codex/
+.openai/
+.publish/
+
+# Generated images, exports, historical bundles and temporary files
+.artifacts/
+outputs/
+dist/
+build/
+coverage/
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.zip
+*.bak
+*.backup
+*-backup.*
+*.tmp
+*.temp
+*.log
+
+# Editor and operating-system state
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~
