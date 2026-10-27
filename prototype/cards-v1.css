@@ -525,9 +525,68 @@ body.cards-prototype .card-atmosphere::before { content:""; position:absolute; i
 body.cards-prototype [data-card-light="dusk"] .card-atmosphere::before { opacity:1; }
 body.cards-prototype .card-fog { position:absolute; inset:-10%; opacity:0; background:radial-gradient(ellipse at 30% 10%,#e5e9e3ba,transparent 65%),linear-gradient(180deg,#e4ece698,transparent 82%); transition:opacity .6s; }
 body.cards-prototype [data-card-weather="fog"] .card-fog { opacity:1; }
-body.cards-prototype .card-rain { position:absolute; inset:-60px; opacity:0; background-image:repeating-linear-gradient(108deg,transparent 0px,transparent 47px,#d2e3df77 48px,transparent 49px,transparent 83px); background-size:120px 180px; transform:translateY(0); }
+body.cards-prototype .card-rain { position:absolute; inset:-60px; opacity:0; background-image:repeating-linear-gradient(108deg,transparent 0px,transparent 47px,#d2e3df77 48px,transparent 49px,transparent 83px); background-size:120px 180px; transform:translateY(0); transition:opacity .8s; }
 body.cards-prototype [data-card-weather="rain"] .card-rain { opacity:.6; animation:card-rainfall .65s linear infinite; }
 @keyframes card-rainfall { to { transform:translate(-28px,60px); } }
 @media(max-width:760px) { body.cards-prototype .prototype-version { display:none; } body.cards-prototype .prototype-tools,body.cards-prototype .prototype-actions { gap:4px; } }
 @media(max-width:520px) { body.cards-prototype .prototype-toolbar { flex-wrap:nowrap; } body.cards-prototype .prototype-tools,body.cards-prototype .prototype-actions { flex-wrap:nowrap; } body.cards-prototype .toolbar-divider { display:none; } body.cards-prototype #redoBtn { display:none; } }
 @media(prefers-reduced-motion:reduce) { body.cards-prototype #board,body.cards-prototype .card-fog,body.cards-prototype .card-atmosphere::before { transition:none; } body.cards-prototype [data-card-weather="rain"] .card-rain { animation:none; } }
+
+/* Pick up, preview, release: one continuous gesture, with a reusable hand. */
+body.cards-prototype .intent-card { touch-action:none; user-select:none; cursor:grab; }
+body.cards-prototype .intent-card.is-drag-source { opacity:.2; box-shadow:none; }
+body.cards-prototype.card-is-dragging,
+body.cards-prototype.card-is-dragging #board { cursor:grabbing!important; user-select:none; }
+body.cards-prototype .card-drag-ghost {
+  position:fixed;left:0;top:0;bottom:auto;z-index:80;width:142px;height:201px;
+  pointer-events:none;transform-origin:50% 35%;transition:box-shadow .15s,border-color .15s;
+  box-shadow:0 18px 42px #122c3540,0 3px 0 #d2d7c6;opacity:.96;
+}
+body.cards-prototype .card-drag-ghost.is-drop-valid { border-color:#a8cfa8;box-shadow:0 18px 42px #122c3540,0 0 0 3px #c6ddbc66; }
+body.cards-prototype .card-drag-ghost.is-drop-invalid { border-color:#bc9272; }
+body.cards-prototype .card-drag-ghost .card-drag-status {
+  position:absolute;bottom:8px;left:10px;right:10px;padding:5px 4px;background:#e4e9d8;
+  border-radius:6px;color:#526f53;text-align:center;font-size:11px;line-height:1.4;
+}
+body.cards-prototype .card-drag-ghost .card-scope { display:none; }
+body.cards-prototype .card-drag-ghost.is-drop-valid .card-drag-status { background:#d6e8ca;color:#385c3a; }
+body.cards-prototype .card-drag-ghost.is-drop-invalid .card-drag-status { background:#eedfcd;color:#8b674a; }
+body.cards-prototype .card-dock.is-dragging .intent-card:not(.is-drag-source) { opacity:.65; }
+body.cards-prototype .board-card { transition:box-shadow .18s; }
+body.cards-prototype .board-card.is-card-dropzone { box-shadow:inset 0 0 0 3px #b6cda3; }
+body.cards-prototype .board-card.is-card-drop-invalid { box-shadow:inset 0 0 0 2px #c5a680; }
+body.cards-prototype .board-card.is-card-dropzone::after {
+  content:"";position:absolute;inset:3px;border:2px solid #bfd7aa99;border-radius:10px;pointer-events:none;z-index:4;
+}
+body.cards-prototype .board-card.is-card-drop-invalid::after { border-color:#d2b58e88; }
+body.cards-prototype .card-drop-guide {
+  position:absolute;top:24px;left:50%;transform:translateX(-50%);z-index:6;
+  padding:7px 17px;background:#f0f4e9ed;border:1px solid #b9cdaa;border-radius:20px;
+  color:#4c6a4e;font-size:12px;white-space:nowrap;pointer-events:none;
+}
+body.cards-prototype .card-change-wave {
+  position:absolute;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;
+  pointer-events:none;animation:card-world-wave 1.2s ease-out forwards;
+  background:radial-gradient(circle,#efd9a655,transparent 72%);
+}
+body.cards-prototype .card-change-wave[data-card="dusk"] { background:radial-gradient(circle,#e6b28280,transparent 72%); }
+body.cards-prototype .card-change-wave[data-card="fog"] { background:radial-gradient(circle,#dbe6e170,transparent 72%); }
+body.cards-prototype .card-change-wave[data-card="rain"] { background:radial-gradient(circle,#9fbfca65,transparent 72%); }
+body.cards-prototype .card-change-wave.is-local-change {
+  background:transparent;border:2px solid #e5e2b3b0;animation:card-local-wave .8s ease-out forwards;
+}
+body.cards-prototype .card-change-spark {
+  position:absolute;width:5px;height:8px;margin:-4px 0 0 -2px;border-radius:50% 10% 50% 10%;
+  background:#e4d4a7;pointer-events:none;animation:card-spark .85s ease-out forwards;
+}
+@keyframes card-world-wave { from { transform:scale(.2);opacity:.7; } to { transform:scale(var(--wave-scale));opacity:0; } }
+@keyframes card-local-wave { from { transform:scale(.25);opacity:.8; } to { transform:scale(2.7);opacity:0; } }
+@keyframes card-spark { from { transform:translate(0,0) rotate(0deg);opacity:.9; } to { transform:translate(var(--spark-x),var(--spark-y)) rotate(100deg);opacity:0; } }
+@media(max-width:760px) {
+  body.cards-prototype .card-drop-guide { top:auto;bottom:14px;max-width:calc(100% - 24px);font-size:11px; }
+  body.cards-prototype .card-drag-ghost { width:128px;height:184px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  body.cards-prototype .card-drag-ghost,body.cards-prototype .board-card { transition:none; }
+  body.cards-prototype .card-change-wave,body.cards-prototype .card-change-spark { display:none;animation:none; }
+}

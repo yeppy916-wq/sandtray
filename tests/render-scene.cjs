@@ -3,11 +3,11 @@ const {createCanvas,Path2D}=require('@napi-rs/canvas');
 const artifactDir=path.join(__dirname,'../.artifacts');fs.mkdirSync(artifactDir,{recursive:true});
 const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
 let js=html.match(/<script id="game">([\s\S]*?)<\/script>/)[1];
-js=js.replace(/\}\)\(\);\s*$/, 'globalThis.__view={camera,scene,draw,setView,point,cellAt,play,pause,update,place,commit,historyStep,refreshSearch,preview,setTool,storyState,storyChoose,storyClose,storyManual,clearRun,loadScene,storyDemoScene,storyReconcile,cardSelect,cardApply,cardCancel,cardState,cardMakeCandidate,cardDrawPreview,intentCards,chooseCardPoint:p=>cardCandidate=cardMakeCandidate(cardActive,p),getSpeed:()=>speed,getScene:()=>scene,getMode:()=>mode,getActor:()=>actor,getCompleted:()=>completedWaypoints,getSearch:()=>search,setMaterial:m=>landMaterial=m};})();');
+js=js.replace(/\}\)\(\);\s*$/, 'globalThis.__view={camera,scene,draw,setView,point,cellAt,play,pause,update,place,commit,historyStep,refreshSearch,preview,setTool,storyState,storyChoose,storyClose,storyManual,clearRun,loadScene,storyDemoScene,storyReconcile,cardPointerDown,cardMovePointer,cardFinishPointer,cardDropTarget,cardNeedsFrame,getDragging:()=>cardDragging,getUndoCount:()=>undo.length,cardSelect,cardApply,cardCancel,cardState,cardMakeCandidate,cardDrawPreview,intentCards,chooseCardPoint:p=>cardCandidate=cardMakeCandidate(cardActive,p),getSpeed:()=>speed,getScene:()=>scene,getMode:()=>mode,getActor:()=>actor,getCompleted:()=>completedWaypoints,getSearch:()=>search,setMaterial:m=>landMaterial=m};})();');
 class Node{
  constructor(id=''){this.id=id;this.dataset={};this.style={setProperty(){}};this.children=[];this.events={};this.checked=false;this.open=false;this.value='';this.textContent='';this.classList={toggle(){},add(){},remove(){}};this.sub={};}
  addEventListener(t,f){(this.events[t]??=[]).push(f)}
- appendChild(c){this.children.push(c)}
+ appendChild(c){this.children.push(c);c.parent=this;if(c.id)nodes.set(c.id,c)}
  append(...c){this.children.push(...c)}
  replaceChildren(...c){this.children=c}
  showModal(){this.open=true}
@@ -22,12 +22,14 @@ class Node{
  setPointerCapture(){}
  hasPointerCapture(){return false}
  releasePointerCapture(){}
+ getBoundingClientRect(){return {left:0,top:850,right:142,bottom:1051,width:142,height:201}}
+ remove(){if(this.parent)this.parent.children=this.parent.children.filter(c=>c!==this);}
 }
 const nodes=new Map([...html.matchAll(/id="([^"]+)"/g)].map(m=>[m[1],new Node(m[1])]));
 const native=createCanvas(1280,820),board=nodes.get('board');
 Object.defineProperties(board,{width:{get:()=>native.width,set:v=>native.width=v},height:{get:()=>native.height,set:v=>native.height=v}});
-board.getContext=()=>native.getContext('2d');board.getBoundingClientRect=()=>({left:0,top:0,width:1280,height:820});
-const doc={getElementById:id=>nodes.get(id),querySelector:()=>new Node(),querySelectorAll:s=>s==='[data-tool]'?nodes.get('palette').children:[],createElement:()=>new Node(),addEventListener(){}};
+board.getContext=()=>native.getContext('2d');board.getBoundingClientRect=()=>({left:0,top:0,right:1280,bottom:820,width:1280,height:820});
+const doc={body:new Node('body'),getElementById:id=>nodes.get(id),querySelector:()=>new Node(),querySelectorAll:s=>s==='[data-tool]'?nodes.get('palette').children:[],createElement:()=>new Node(),elementFromPoint:()=>null,addEventListener(){}};
 const env={document:doc,Path2D,OffscreenCanvas:class{constructor(w,h){return createCanvas(w,h)}},window:{devicePixelRatio:1,addEventListener(){}},localStorage:{getItem:()=>null,setItem(){}},requestAnimationFrame(){},setTimeout(){},clearTimeout(){},performance:{now:()=>0},console};
 vm.createContext(env);vm.runInContext(js,env);const v=env.__view;
 v.draw(0);v.setView('far',false);v.draw(0);fs.writeFileSync(path.join(artifactDir,'far-scene.png'),native.toBuffer('image/png'));
@@ -94,4 +96,24 @@ const gate=v.cardMakeCandidate(v.intentCards.find(card=>card.id==='gate'),{x:14,
 choose('waypoint');const waypoint=v.chooseCardPoint({x:6,y:6});assert.ok(waypoint.valid);v.cardApply();assert.equal(v.getScene().waypoints[0].x,6);assert.ok(env.SandtrayCore.validScene(v.getScene()));
 choose('stop');const stop=v.chooseCardPoint({x:7,y:9});assert.ok(stop.valid);v.cardApply();assert.equal(v.getScene().goal.x,7);assert.equal(v.getScene().goal.y,9);
 assert.ok(env.SandtrayCore.validScene(v.getScene()));assert.equal(env.SandtrayCore.migrateScene(v.getScene()).cardState.weather,'rain','card effects survive save migration');
-console.log('Rendering, routing, narrative, terrain editing, card previews, grouped undo/redo, weather combinations, bridge validation, journey cards and saved effects passed. Encounters: '+encountered.join(', '));
+// Drag gestures commit only on a valid release, and cancellation restores a moving traveller.
+v.loadScene(v.storyDemoScene(),'drag fixture');v.storyState.enabled=false;v.setView('far',false);v.draw(5000);
+const event=(x,y,id=91)=>({clientX:x,clientY:y,pointerId:id,pointerType:'mouse',isPrimary:true,button:0,preventDefault(){},stopImmediatePropagation(){}});
+function beginDrag(id){const card=v.intentCards.find(c=>c.id===id),source=new Node();source.innerHTML=card.name;v.cardPointerDown(card,source,event(100,890));return source;}
+const fresh=snapshot(),historyBefore=v.getUndoCount();
+beginDrag('fog');v.cardMovePointer(event(104,893));assert.equal(v.getDragging(),false,'tiny pointer movement remains a click');v.cardFinishPointer(event(104,893),true);assert.equal(snapshot(),fresh);
+beginDrag('fog');v.cardMovePointer(event(500,300));assert.equal(v.getDragging(),true);assert.equal(snapshot(),fresh,'drag preview does not edit the scene');
+v.cardFinishPointer(event(1300,880),true);assert.equal(snapshot(),fresh,'outside release cancels');assert.equal(v.getUndoCount(),historyBefore,'cancel does not create a history step');
+beginDrag('fog');v.cardMovePointer(event(500,300));v.cardFinishPointer(null,false);assert.equal(snapshot(),fresh,'pointer cancel/Escape never applies a card');
+beginDrag('dusk');v.cardMovePointer(event(500,300));v.cardFinishPointer(event(500,300),true);assert.equal(v.cardState().light,'dusk');assert.equal(v.getUndoCount(),historyBefore+1);
+const unchangedCount=v.getUndoCount();beginDrag('dusk');v.cardMovePointer(event(500,300));v.cardFinishPointer(event(500,300),true);assert.equal(v.getUndoCount(),unchangedCount,'repeating an active global effect is a no-op');
+v.play();v.update(.1);assert.equal(v.getMode(),'walking');const movingActor=JSON.stringify(v.getActor());
+beginDrag('trees');v.cardMovePointer(event(500,300));assert.equal(v.getMode(),'paused','local preview pauses the traveller');
+v.cardFinishPointer(null,false);assert.equal(v.getMode(),'walking');assert.equal(JSON.stringify(v.getActor()),movingActor,'cancel restores the exact pre-preview position');
+beginDrag('rain');v.cardMovePointer(event(500,300));assert.equal(v.getMode(),'walking','global previews allow walking');v.cardFinishPointer(event(500,300),true);
+assert.equal(v.getMode(),'walking','applying weather preserves the journey');assert.equal(JSON.stringify(v.getActor()),movingActor);assert.equal(v.cardState().weather,'rain');
+const target=screen({x:6,y:6});beginDrag('trees');v.cardMovePointer(event(target.clientX,target.clientY));v.cardFinishPointer(event(target.clientX,target.clientY),true);
+assert.equal(v.getMode(),'paused','confirmed local edits stay paused for inspection');assert.equal(v.getScene().objects[6*22+6].type,'tree');
+assert.equal(v.cardNeedsFrame(0),true,'new objects have a bounded reveal animation');assert.equal(v.cardNeedsFrame(2000),false,'animation records expire');
+v.historyStep(true);assert.equal(v.getScene().objects[6*22+6],null,'a spatial drag undoes as a complete group');
+console.log('Rendering, routing, narrative, terrain editing, card previews, drag/drop, cancellation, journey preservation, animations and grouped undo/redo passed. Encounters: '+encountered.join(', '));
