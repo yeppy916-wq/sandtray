@@ -3,9 +3,9 @@ const {createCanvas,Path2D}=require('@napi-rs/canvas');
 const artifactDir=path.join(__dirname,'../.artifacts');fs.mkdirSync(artifactDir,{recursive:true});
 const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
 let js=html.match(/<script id="game">([\s\S]*?)<\/script>/)[1];
-js=js.replace(/\}\)\(\);\s*$/, 'globalThis.__view={camera,scene,draw,setView,point,cellAt,play,pause,update,place,commit,historyStep,refreshSearch,preview,setTool,storyState,storyChoose,storyClose,storyManual,clearRun,loadScene,storyDemoScene,storyReconcile,getScene:()=>scene,getMode:()=>mode,getActor:()=>actor,getCompleted:()=>completedWaypoints,getSearch:()=>search,setMaterial:m=>landMaterial=m};})();');
+js=js.replace(/\}\)\(\);\s*$/, 'globalThis.__view={camera,scene,draw,setView,point,cellAt,play,pause,update,place,commit,historyStep,refreshSearch,preview,setTool,storyState,storyChoose,storyClose,storyManual,clearRun,loadScene,storyDemoScene,storyReconcile,cardSelect,cardApply,cardCancel,cardState,cardMakeCandidate,cardDrawPreview,intentCards,chooseCardPoint:p=>cardCandidate=cardMakeCandidate(cardActive,p),getSpeed:()=>speed,getScene:()=>scene,getMode:()=>mode,getActor:()=>actor,getCompleted:()=>completedWaypoints,getSearch:()=>search,setMaterial:m=>landMaterial=m};})();');
 class Node{
- constructor(id=''){this.id=id;this.dataset={};this.style={};this.children=[];this.events={};this.checked=false;this.open=false;this.value='';this.textContent='';this.classList={toggle(){},add(){},remove(){}};this.sub={};}
+ constructor(id=''){this.id=id;this.dataset={};this.style={setProperty(){}};this.children=[];this.events={};this.checked=false;this.open=false;this.value='';this.textContent='';this.classList={toggle(){},add(){},remove(){}};this.sub={};}
  addEventListener(t,f){(this.events[t]??=[]).push(f)}
  appendChild(c){this.children.push(c)}
  append(...c){this.children.push(...c)}
@@ -14,6 +14,9 @@ class Node{
  close(){this.open=false}
  setAttribute(){}
  querySelector(s){return this.sub[s]??=new Node()}
+ querySelectorAll(){return []}
+ closest(){return this.sub.wrap??=new Node()}
+ contains(){return false}
  matches(){return false}
  focus(){}
  setPointerCapture(){}
@@ -70,4 +73,25 @@ assert.equal(v.getScene().start.x,3);assert.equal(v.getScene().waypoints[0].y,3)
 assert.equal(v.place(v.getScene().waypoints[0],'water'),false,'waypoint terrain is protected');
 v.setMaterial('stone');v.place({x:4,y:3},'sand');assert.equal(v.getScene().materials[3*22+4],'stone');
 v.draw(3000);fs.writeFileSync(path.join(artifactDir,'terrain-edit-scene.png'),native.toBuffer('image/png'));
-console.log('Rendering, marker dragging, required waypoint detours, pause/resume progress, ocean building, materials, undo/redo, narrative and character destinations passed. Encounters: '+encountered.join(', '));
+// Card previews are reversible and only confirmed changes enter the scene history.
+v.loadScene(v.storyDemoScene(),'card fixture');v.draw(4000);
+const choose=id=>v.cardSelect(v.intentCards.find(card=>card.id===id));
+const snapshot=()=>JSON.stringify(v.getScene());
+const original=snapshot();choose('dusk');assert.equal(snapshot(),original,'light preview never mutates scene');
+v.cardCancel();assert.equal(snapshot(),original,'cancel restores the original scene');
+choose('dusk');v.cardApply();assert.equal(v.cardState().light,'dusk');
+v.historyStep(true);assert.equal(v.cardState().light,'day');v.historyStep(false);assert.equal(v.cardState().light,'dusk');
+choose('fog');v.cardApply();assert.equal(v.cardState().light,'dusk');assert.equal(v.cardState().weather,'fog','weather combines with light');
+choose('rain');v.cardApply();assert.equal(v.cardState().weather,'rain','new weather replaces old weather');
+choose('slow');v.cardApply();assert.equal(v.getSpeed(),1.2);v.historyStep(true);assert.equal(v.getSpeed(),3,'undo restores actual walking speed');
+const beforeTrees=snapshot();choose('trees');const treePreview=v.chooseCardPoint({x:6,y:6});
+assert.ok(treePreview.valid);assert.ok(treePreview.changes.length>0);assert.equal(snapshot(),beforeTrees,'spatial preview never mutates scene');
+v.cardDrawPreview();v.cardApply();assert.notEqual(snapshot(),beforeTrees);v.historyStep(true);assert.equal(snapshot(),beforeTrees,'whole group undoes in one step');
+const bridgeCard=v.intentCards.find(card=>card.id==='bridge');
+assert.equal(v.cardMakeCandidate(bridgeCard,{x:6,y:6}).valid,false,'bridge rejects dry land');
+const bridge=v.cardMakeCandidate(bridgeCard,{x:10,y:5});assert.ok(bridge.valid);assert.equal(bridge.changes.length,2,'bridge spans both water tiles');
+const gate=v.cardMakeCandidate(v.intentCards.find(card=>card.id==='gate'),{x:14,y:3});assert.ok(gate.valid);assert.equal(gate.next.objects[3*22+14].open,true);
+choose('waypoint');const waypoint=v.chooseCardPoint({x:6,y:6});assert.ok(waypoint.valid);v.cardApply();assert.equal(v.getScene().waypoints[0].x,6);assert.ok(env.SandtrayCore.validScene(v.getScene()));
+choose('stop');const stop=v.chooseCardPoint({x:7,y:9});assert.ok(stop.valid);v.cardApply();assert.equal(v.getScene().goal.x,7);assert.equal(v.getScene().goal.y,9);
+assert.ok(env.SandtrayCore.validScene(v.getScene()));assert.equal(env.SandtrayCore.migrateScene(v.getScene()).cardState.weather,'rain','card effects survive save migration');
+console.log('Rendering, routing, narrative, terrain editing, card previews, grouped undo/redo, weather combinations, bridge validation, journey cards and saved effects passed. Encounters: '+encountered.join(', '));

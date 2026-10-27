@@ -2,6 +2,7 @@ from pathlib import Path
 from story_feature import augment_story
 from route_feature import augment_route
 from ui_feature import augment_ui
+from cards_feature import augment_cards
 
 root=Path(__file__).resolve().parent
 source=(root/'base-template.html').read_text(encoding='utf8')
@@ -59,6 +60,7 @@ source=source.replace("if(restored)message('上次的沙盘已恢复。可以继
 source=augment_story(source)
 source=augment_route(source)
 source=augment_ui(source)
+source=augment_cards(source)
 source='\n'.join(line.rstrip() for line in source.splitlines())+'\n'
 out=root.parent/'index.html'
 out.write_text(source,encoding='utf8',newline='\n')

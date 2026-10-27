@@ -47,11 +47,14 @@ def augment_ui(source):
     camera = camera.replace('<div class="camera-panel" aria-label="摄像机控制">', '<div class="camera-content" aria-label="摄像机控制">', 1)
     pace = '<label class="pace-label" for="paceBtn">同行节奏</label><select id="paceBtn" aria-label="同行节奏"><option value="guided">相遇时停留</option><option value="scenery">轻声描述</option><option value="quiet">安静同行</option></select>'
     note = by_id('storyNoteWrap')
-    story = story.replace(note, note.replace('<div id="storyNoteWrap">', '<details id="storyNoteWrap"><summary>留一句话 · 可选</summary>', 1)[:-6] + '</details>')
+    note_markup = note.replace('<div id="storyNoteWrap">', '<details id="storyNoteWrap"><summary>留一句话 · 可选</summary>', 1)[:-6] + '</details>'
+    story = story.replace(note, note_markup)
     story = story.replace('同行者 · 预写片段', '此刻，在旅人身旁')
     story = story.replace('文字显全', '显示全文')
+    prose = f'''<div class="story-body" id="storyBody"><div class="story-prose">{by_id('storyPlace')}{by_id('storyNarration')}{by_id('storyPrompt')}{by_id('storyReply')}{note_markup}</div>{by_id('storyChoices')}</div>'''
+    story = story.replace(by_id('storyBody').replace(note, note_markup), prose, 1)
     talk = by_id('talkBtn').replace('class="button"', 'class="talk-anchor"')
-    talk = talk.replace('此刻聊聊', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 1-8 8H5l-3 3v-7a8 8 0 1 1 18-4Z"/><path d="M7 10h8M7 14h5"/></svg><span>停一刻，聊聊</span>')
+    talk = talk.replace('此刻聊聊', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 1-8 8H5l-3 3v-7a8 8 0 1 1 18-4Z"/><path d="M7 10h8M7 14h5"/></svg><span>聊聊</span>')
     play = by_id('playBtn')
     pause = by_id('pauseBtn')
     home = by_id('homeBtn').replace('回到起点', '重新出发')
@@ -85,9 +88,10 @@ def augment_ui(source):
    <div class="board-head"><div class="board-title"><h2>我的一方天地</h2>{by_id('statusBadge')}</div></div>
    {canvas}
    <details class="camera-panel" id="cameraMenu"><summary>视角与显示 <span aria-hidden="true">⌄</span></summary><div class="camera-settings">{camera}{view}<p class="camera-hint">滚轮缩放 · 右键拖动平移</p></div></details>
-   {talk}
-   <div class="companion-controls" aria-label="沙盘同行"><span class="companion-label"><i aria-hidden="true">◌</i> 同行者</span>{journal}<details class="companion-settings" id="companionSettings"><summary>同行设置 <span aria-hidden="true">⌄</span></summary><div class="companion-settings-content">{story_toggle}{pace}<p>随时可以回应，也可以安静地走。</p></div></details></div>
-   {caption}{story}
+  </section>
+  <section class="narrative-rail" id="narrativeRail" aria-label="沿途叙述">
+   <div class="narrative-bar"><div class="narrative-copy"><p class="narrative-hint">沿途的故事，慢慢发生。</p>{caption}</div><div class="narrative-actions">{talk}<div class="companion-controls" aria-label="沙盘同行">{journal}<details class="companion-settings" id="companionSettings"><summary>同行设置 <span aria-hidden="true">⌄</span></summary><div class="companion-settings-content">{story_toggle}{pace}</div></details></div></div></div>
+   {story}
   </section>
   <section class="journey-panel" aria-label="旅程与路线">
    <div class="route-plan"><div class="journey-label"><p class="ui-eyebrow">路线</p><h2>安排这一段路</h2></div><div class="route-fields">{markers}{summary}</div></div>
@@ -106,6 +110,7 @@ def augment_ui(source):
     rep("function updateUI(){\n const isRun=", "function updateUI(){\n if(typeof uiRefresh==='function')uiRefresh();\n const isRun=")
     rep("draw(time);lastDraw=time;", "draw(time);uiPositionTalk();lastDraw=time;")
     rep("$('paceBtn').textContent=labels[storyState.pace];", "$('paceBtn').value=storyState.pace;")
+    rep("$('storyBody').scrollTop=0;", "$('storyBody').scrollTop=0;document.querySelector('.story-prose').scrollTop=0;$('storyChoices').scrollTop=0;$('storyNoteWrap').open=false;")
     rep("$('paceBtn').addEventListener('click',()=>{const list=['guided','scenery','quiet'];storyState.pace=list[(list.indexOf(storyState.pace)+1)%3];storyUpdatePace();toast('同行节奏：'+$('paceBtn').textContent);});", "$('paceBtn').addEventListener('change',e=>{storyState.pace=e.target.value;storyUpdatePace();toast('同行节奏已更新。');});")
     rep("for(const [id,label,shortcut] of toolDefs){", (ROOT/'ui.js').read_text(encoding='utf8') + '\nfor(const [id,label,shortcut] of toolDefs){')
     rep('initNarrative();refreshSearch();', 'initNarrative();initInterface();refreshSearch();')
@@ -116,5 +121,6 @@ def augment_ui(source):
     source = source.replace('上次的沙盘已恢复。想体验动物与人物的沿途故事，请点击右上角“同行示例”。', '上次的沙盘已恢复。可以继续摆放，或在“沙盘选项”中载入示例。')
     source = source.replace('原版不规则沙盘已载入。先用“查看 / 移动”打开庭院小门，再沿起点 → 途经点 → 终点行走。', '示例已载入。点开庭院小门，再按起点 → 途经点 → 终点行走。')
     source = source.replace("a.location?'停在这处相遇旁':'此刻所在的地方'", "a.kind==='encounter'?'停在这处相遇旁':'旅人此刻所在的地方'")
-    source = source.replace('IRREGULAR SANDBOX / 0.7', 'IRREGULAR SANDBOX / 0.8')
+    source = source.replace('IRREGULAR SANDBOX / 0.7', 'IRREGULAR SANDBOX / 0.8.1')
+    source = source.replace('此刻，在旅人身旁', '沿途 · 同行')
     return source

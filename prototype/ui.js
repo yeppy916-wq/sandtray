@@ -11,24 +11,6 @@ function uiRefresh(){
 function uiPositionTalk(){
  if(!uiReady)return;
  const button=$('talkBtn');button.hidden=!scene.start||!!storyState.active;
- uiPositionStory();
- if(button.hidden||!camera.ready)return;
- const p=point(actor),x=camera.x+p.x*camera.zoom,y=camera.y+p.y*camera.zoom;
- const r=canvas.getBoundingClientRect(),width=152,height=48;
- button.style.left=Math.max(12,Math.min(r.width-width-12,x-width/2))+'px';
- button.style.top=Math.max(80,Math.min(r.height-height-84,y-92))+'px';
-}
-function uiPositionStory(){
- const dock=$('storyDock');if(!storyState.active||!dock.getBoundingClientRect)return;
- const r=canvas.getBoundingClientRect(),p=point(actor),x=camera.x+p.x*camera.zoom,y=camera.y+p.y*camera.zoom;
- const compact=r.width<680,margin=compact?12:20,width=Math.min(compact?640:430,r.width-margin*2);
- dock.style.width=width+'px';dock.style.maxHeight=(compact?Math.max(200,Math.min(350,r.height*.46)):Math.max(175,r.height-84))+'px';
- let left=compact?(r.width-width)/2:x+36;
- if(!compact&&left+width>r.width-margin)left=x-width-36;
- left=Math.max(margin,Math.min(r.width-width-margin,left));
- const h=dock.getBoundingClientRect().height;
- const top=compact?r.height-h-12:Math.max(70,Math.min(r.height-h-20,y-h*.64));
- dock.style.left=left+'px';dock.style.top=Math.max(56,top)+'px';dock.style.bottom='auto';dock.style.transform='none';
 }
 function initInterface(){
  uiReady=true;
